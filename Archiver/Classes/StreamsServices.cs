@@ -24,20 +24,18 @@ namespace Archiver
             get { return _archivePath; }
             set { _archivePath = value; }
         }
-        public void WriteArchive()
+
+        public void WriteArchive() //алгоритм записи файлов любого размера
         {
             using (FileStream fs = new FileStream(ReadedItem, FileMode.Open, FileAccess.Read))
             {
                 using (BinaryReader br = new BinaryReader(fs))
                 {
-                    //алгоритм записи файлов любого размера
                     byte[] chunk;
-
                     chunk = br.ReadBytes(BUFFER_SIZE);
                     using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivePath, FileMode.Append)))
                     {
-                        //при каждом начале нового файла дописываем смещение для него и помещаем во временный xml;
-                        Displacement = writer.BaseStream.Position;
+                        Displacement = writer.BaseStream.Position;//при каждом начале нового файла дописываем смещение для него;
                         while (br.BaseStream.Position != fs.Length)
                         {
                             writer.Write(chunk);

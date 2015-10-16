@@ -58,9 +58,37 @@ namespace Archiver
                 Service.ArchivePath = ArchiveName;
                 Service.WriteArchive();
                 displacement = Service.Displacement;
+                XmlServices.XMLPath = ArchiveName;
                 XmlServices.AddtoXML(doc, item, displacement);
             }
+            
             XmlServices.WriteXMLToEnd(ArchiveName);
+        }
+        public void openArchive()
+        {
+            XmlServices.XMLPath = ArchiveName;
+            XmlServices.GETXML();
+        }
+        public void ExtractALL(string zipPath, string directoryName, string extractPath)
+        {
+
+            XmlServices.GETXML();
+            XDocument doc = XDocument.Load(directoryName + "\\temp.xml");
+            foreach (var item in doc.Root.Elements())
+            {
+                using (BinaryReader reader = new BinaryReader(File.Open(zipPath, FileMode.Open)))
+                {
+                    reader.BaseStream.Seek(Convert.ToInt64(item.Element("displacement").Value), SeekOrigin.Begin);
+                    using (BinaryWriter writer = new BinaryWriter(File.Create(extractPath + "\\" + item.Element("fileName").Value)))
+                    {
+                        for (long i = 0; i < Convert.ToInt64(item.Element("size").Value); i++)
+                        {
+                            writer.Write(reader.ReadByte());
+                        }
+                    }
+                }
+            }
+            File.Delete(directoryName + "\\temp.xml");
         }
 
         //public static void AddFileToExistArchive(string zipPath, string addFileName, Label zipPathLabel)
@@ -74,25 +102,7 @@ namespace Archiver
         //    WriteArchive(zipPath, doc, addFileName);
         //    WriteXMLToEnd(zipPath);
         //}
-        //public static void ExtractALL(string zipPath, string directoryName, string extractPath)
-        //{
-        //    XDocument doc = XDocument.Load(directoryName + "\\temp.xml");
-        //    foreach (var item in doc.Root.Elements())
-        //    {
-        //        using (BinaryReader reader = new BinaryReader(File.Open(zipPath, FileMode.Open)))
-        //        {
-        //            reader.BaseStream.Seek(Convert.ToInt64(item.Element("displacement").Value), SeekOrigin.Begin);
-        //            using (BinaryWriter writer = new BinaryWriter(File.Create(extractPath + "\\" + item.Element("fileName").Value)))
-        //            {
-        //                for (long i = 0; i < Convert.ToInt64(item.Element("size").Value); i++)
-        //                {
-        //                    writer.Write(reader.ReadByte());
-        //                }
-        //            }
-        //        }
-        //    }
-        //    File.Delete(directoryName + "\\temp.xml");
-        //}
+
 
         //public static void ExtractSingelFile(string fileName, DataGridView table, string path, string extractPath)
         //{

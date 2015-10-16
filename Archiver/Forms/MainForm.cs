@@ -13,7 +13,6 @@ namespace Archiver
     public partial class MainForm : Form
     {
         private Package _package;
-
         internal Package Package
         {
             get
@@ -36,9 +35,12 @@ namespace Archiver
             openFile.Multiselect = true;
             if (openFile.ShowDialog() == DialogResult.OK)
             {
-                Package.FileList = openFile.FileNames;
-                Package.ArchiveName = "testGetter";
-                Package.AddAllFilesToArchive();
+                foreach (string item in openFile.FileNames)
+                {
+                    dataList.Columns[4].Visible = false;
+                    System.IO.FileInfo finfo = new System.IO.FileInfo(item);
+                    dataList.Rows.Add(finfo.Name, finfo.FullName, "delete", "not in archive");
+                }
             }
         }
 
@@ -60,10 +62,21 @@ namespace Archiver
 
             if (saveForm.ShowDialog() == DialogResult.OK)
             {
-
-
+                Package.FileList = GetFileList();
+                Package.ArchiveName = saveForm.FileName;
+                Package.AddAllFilesToArchive();
             }
 
+        }
+
+        private string[] GetFileList()
+        {
+            List<string> List = new List<string>();
+            for(int i= 0; i< dataList.Rows.Count-1; i++)
+            {
+                 List.Add(dataList.Rows[i].Cells[1].Value.ToString());
+            }
+            return List.ToArray();
         }
 
         private void openZip_button_Click(object sender, EventArgs e)
@@ -75,7 +88,8 @@ namespace Archiver
             openFile.FilterIndex = 2;
             if (openFile.ShowDialog() == DialogResult.OK)
             {
-
+                Package.ArchiveName = openFile.FileName;
+                Package.openArchive();
 
             }
         }
@@ -86,7 +100,7 @@ namespace Archiver
             DialogResult result = folderbrowser.ShowDialog();
             if (result == DialogResult.OK)
             {
-
+               //Package.ExtractALL(testGetter, )
             }
         }
 
