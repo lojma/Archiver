@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 
@@ -8,6 +9,7 @@ namespace Archiver
     {
         private string _XMLPath;
         private string _XMLName = "temp.xml";
+        
         public string XMLPath
         {
             get { return _XMLPath; }
@@ -18,6 +20,8 @@ namespace Archiver
                 _XMLPath = newPathXML; 
             }
         }
+        
+        //Запись информации о добавленом файле в XML
         public void AddtoXML(XDocument doc, string name, long displace)
         {
 
@@ -46,6 +50,7 @@ namespace Archiver
             doc.Save(XMLPath);
 
         }
+        //Запись файла XML и его смещения по отношению к концу архива
         public void WriteXMLToEnd(string path)
         {
             FileInfo fi = new FileInfo(XMLPath);
@@ -63,21 +68,31 @@ namespace Archiver
             }
             File.Delete(XMLPath);
         }
-
-
-        public void GETXML()
+        //Получение XML-файла из архива
+        public void GETXML(string ArchiveName)
         {
             FileInfo fi = new FileInfo(XMLPath);
 
-            using (BinaryReader reader = new BinaryReader(File.Open(XMLPath, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(ArchiveName, FileMode.Open)))
             {
                 long disp = BitConverter.ToInt64(reader.ReadBytes(21), 0);
-                using (BinaryWriter writer = new BinaryWriter(File.Open(fi.DirectoryName + _XMLName, FileMode.CreateNew)))
+                using (BinaryWriter writer = new BinaryWriter(File.Open(XMLPath, FileMode.CreateNew)))
                 {
                     reader.BaseStream.Seek(-disp, SeekOrigin.End);
                     writer.Write(Archiver.Classes.BinaryExtenrion.ReadAllBytes(reader));
                 }
             }
+        }
+        //Получение списка имен файлов находящихся в архиве
+        public string[] GetArchiveFileNames()
+        {
+            List<string> List = new List<string>();
+            XDocument doc = XDocument.Load(XMLPath);
+            foreach (var item in doc.Root.Elements())
+            {
+                List.Add(item.Element("fileName").Value);
+            }
+            return List.ToArray();
         }
     }
 }

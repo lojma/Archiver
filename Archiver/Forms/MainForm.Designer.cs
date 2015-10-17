@@ -34,12 +34,13 @@
             this.deleteFile = new System.Windows.Forms.DataGridViewButtonColumn();
             this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.unzipSimpleFile = new System.Windows.Forms.DataGridViewLinkColumn();
-            this.button_Add = new System.Windows.Forms.Button();
+            this.button_Add_Dir = new System.Windows.Forms.Button();
             this.makeZip_button = new System.Windows.Forms.Button();
             this.openZip_button = new System.Windows.Forms.Button();
             this.extractFullZIP_button = new System.Windows.Forms.Button();
             this.zipName_label = new System.Windows.Forms.Label();
             this.addToExistArchive_button = new System.Windows.Forms.Button();
+            this.addFiles_button = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataList)).BeginInit();
             this.SuspendLayout();
             // 
@@ -89,15 +90,15 @@
             this.unzipSimpleFile.Text = "unzip fie";
             this.unzipSimpleFile.UseColumnTextForLinkValue = true;
             // 
-            // button_Add
+            // button_Add_Dir
             // 
-            this.button_Add.Location = new System.Drawing.Point(12, 293);
-            this.button_Add.Name = "button_Add";
-            this.button_Add.Size = new System.Drawing.Size(160, 44);
-            this.button_Add.TabIndex = 1;
-            this.button_Add.Text = "Add file";
-            this.button_Add.UseVisualStyleBackColor = true;
-            this.button_Add.Click += new System.EventHandler(this.button_Add_Click);
+            this.button_Add_Dir.Location = new System.Drawing.Point(12, 293);
+            this.button_Add_Dir.Name = "button_Add_Dir";
+            this.button_Add_Dir.Size = new System.Drawing.Size(160, 44);
+            this.button_Add_Dir.TabIndex = 1;
+            this.button_Add_Dir.Text = "Add Folder";
+            this.button_Add_Dir.UseVisualStyleBackColor = true;
+            this.button_Add_Dir.Click += new System.EventHandler(this.button_Add_Dir_Click);
             // 
             // makeZip_button
             // 
@@ -147,17 +148,28 @@
             this.addToExistArchive_button.UseVisualStyleBackColor = true;
             this.addToExistArchive_button.Click += new System.EventHandler(this.addToExistArchive_button_Click);
             // 
+            // addFiles_button
+            // 
+            this.addFiles_button.Location = new System.Drawing.Point(12, 356);
+            this.addFiles_button.Name = "addFiles_button";
+            this.addFiles_button.Size = new System.Drawing.Size(160, 43);
+            this.addFiles_button.TabIndex = 8;
+            this.addFiles_button.Text = "Add Files";
+            this.addFiles_button.UseVisualStyleBackColor = true;
+            this.addFiles_button.Click += new System.EventHandler(this.addFiles_button_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(685, 470);
+            this.Controls.Add(this.addFiles_button);
             this.Controls.Add(this.addToExistArchive_button);
             this.Controls.Add(this.zipName_label);
             this.Controls.Add(this.extractFullZIP_button);
             this.Controls.Add(this.openZip_button);
             this.Controls.Add(this.makeZip_button);
-            this.Controls.Add(this.button_Add);
+            this.Controls.Add(this.button_Add_Dir);
             this.Controls.Add(this.dataList);
             this.Name = "MainForm";
             this.Text = "FileArchiver";
@@ -170,7 +182,7 @@
         #endregion
 
         public System.Windows.Forms.DataGridView dataList;
-        private System.Windows.Forms.Button button_Add;
+        private System.Windows.Forms.Button button_Add_Dir;
         private System.Windows.Forms.Button makeZip_button;
         private System.Windows.Forms.Button openZip_button;
         private System.Windows.Forms.Button extractFullZIP_button;
@@ -181,6 +193,7 @@
         private System.Windows.Forms.DataGridViewLinkColumn unzipSimpleFile;
         public System.Windows.Forms.Label zipName_label;
         private System.Windows.Forms.Button addToExistArchive_button;
+        private System.Windows.Forms.Button addFiles_button;
     }
 }
 
