@@ -71,7 +71,11 @@ namespace Archiver
                     foreach (string f in Directory.GetFiles(d))
                     {
                         FileInfo finfo = new FileInfo(f);
-                        dataList.Rows.Add(finfo.Name, finfo.FullName, "delete", "not in archive");
+                        if (finfo.Exists != false)
+                        {
+                            dataList.Rows.Add(finfo.Name, finfo.FullName, "delete", "not in archive");
+                        }
+                        else Console.WriteLine("Файл " + finfo.FullName + " не существует. Он не будет помещен в архив");
                     }
                     DirSearch(d);
                 }
@@ -115,6 +119,7 @@ namespace Archiver
                 Package.FileList = GetFileList();
                 Package.ArchiveName = saveForm.FileName;
                 Package.AddAllFilesToArchive();
+                MessageBox.Show(Strings.archivatingComplete + Package.ArchiveName);
             }
 
         }

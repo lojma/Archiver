@@ -65,24 +65,41 @@ namespace Archiver
             XElement library = new XElement("library");
             doc.Add(library);
             byte[] byteArray = new byte[21];
-            
-            FileStream archiveFile = File.Open(ArchiveName, FileMode.CreateNew);
-            using (BinaryWriter writer = new BinaryWriter(archiveFile))
+
+            using (FileStream archiveFile = File.Open(ArchiveName, FileMode.CreateNew))
             {
-                //пишем в начало нашего архива пустую переменную размером в лонг, в бинарном виде.
-                writer.Write(byteArray);
+                try
+                {
+                    using (BinaryWriter writer = new BinaryWriter(archiveFile))
+                    {
+                        //пишем в начало нашего архива пустую переменную размером в лонг, в бинарном виде.
+                        writer.Write(byteArray);
+                    }
+                    foreach (var item in FileList)
+                    {
+                        Service.ReadedItem = item;
+                        Service.ArchivePath = ArchiveName;
+                        Service.WriteArchive();
+                        _displacement = Service.Displacement;
+                        XmlServices.XMLPath = ArchiveName;
+                        XmlServices.AddtoXML(doc, item, _displacement);
+                    }
+
+                    XmlServices.WriteXMLToEnd(ArchiveName);
+                }
+                catch (IOException)
+                {
+                    Console.WriteLine(Strings.ioExp);
+                }
+                catch (TypeAccessException)
+                {
+                    Console.WriteLine(Strings.typeAccessExc);
+                }
+                catch (NullReferenceException)
+                {
+                    Console.WriteLine(Strings.nullRefExp);
+                }
             }
-            foreach (var item in FileList)
-            {
-                Service.ReadedItem = item;
-                Service.ArchivePath = ArchiveName;
-                Service.WriteArchive();
-                _displacement = Service.Displacement;
-                XmlServices.XMLPath = ArchiveName;
-                XmlServices.AddtoXML(doc, item, _displacement);
-            }
-            
-            XmlServices.WriteXMLToEnd(ArchiveName);
         }
         
         //Открытие архива(поиск XML и запись списка содержащихся в архиве файлов

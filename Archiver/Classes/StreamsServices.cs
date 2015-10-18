@@ -50,26 +50,33 @@ namespace Archiver
 
         public void WriteArchive() //алгоритм записи файлов любого размера
         {
-            using (FileStream fs = new FileStream(ReadedItem, FileMode.Open, FileAccess.Read))
+            try
             {
-                using (BinaryReader br = new BinaryReader(fs))
+                using (FileStream fs = new FileStream(ReadedItem, FileMode.Open, FileAccess.Read))
                 {
-                    byte[] chunk;
-                    chunk = br.ReadBytes(BUFFER_SIZE);
-                    ProgressBar.CurrentPosition = System.Convert.ToInt32(br.BaseStream.Position);
-                    using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivePath, FileMode.Append)))
+                    using (BinaryReader br = new BinaryReader(fs))
                     {
-                        Displacement = writer.BaseStream.Position;//при каждом начале нового файла дописываем смещение для него;
-                        while (br.BaseStream.Position != fs.Length)
+                        byte[] chunk;
+                        chunk = br.ReadBytes(BUFFER_SIZE);
+                        ProgressBar.CurrentPosition = System.Convert.ToInt32(br.BaseStream.Position);
+                        using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivePath, FileMode.Append)))
                         {
-                            ProgressBar.TotalSize = System.Convert.ToInt32(writer.BaseStream.Position);
+                            Displacement = writer.BaseStream.Position;//при каждом начале нового файла дописываем смещение для него;
+                            while (br.BaseStream.Position != fs.Length)
+                            {
+                                ProgressBar.TotalSize = System.Convert.ToInt32(writer.BaseStream.Position);
+                                writer.Write(chunk);
+                                chunk = br.ReadBytes(BUFFER_SIZE);
+                            }
                             writer.Write(chunk);
-                            chunk = br.ReadBytes(BUFFER_SIZE);
+
                         }
-                        writer.Write(chunk);
-                        
                     }
                 }
+            }
+            catch (FileNotFoundException fileNotFoundExp)
+            {
+                System.Console.WriteLine(fileNotFoundExp.FileName + Strings.ioExp);
             }
         }
     }
