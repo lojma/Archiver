@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Archiver
 {
     public partial class MainForm : Form
     {
+        private const string defEXT= ".container";
         private Package _package;
         internal Package Package
         {
@@ -32,18 +27,17 @@ namespace Archiver
         private void button_Add_Dir_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog openFolder = new FolderBrowserDialog();
-            //openFile.InitialDirectory = "d:\\";
-            //openFile.Multiselect = true;
             if (openFolder.ShowDialog() == DialogResult.OK)
             {
                 dataList.Columns[4].Visible = false;
-                foreach (var item in Directory.GetFiles(openFolder.SelectedPath))
+                List<string> fileList = Archiver.Classes.FileUtilites.DirSearch(openFolder.SelectedPath);
+                foreach (var item in fileList)
                 {
                     FileInfo finfo = new FileInfo(item);
                     dataList.Rows.Add(finfo.Name, finfo.FullName, "delete", "not in archive");
                 }
-                DirSearch(openFolder.SelectedPath);
                 
+
             }
         }
         //Добавление файлов в таблицу
@@ -61,30 +55,7 @@ namespace Archiver
                 }
             }
         }
-        // Рекурсивный поиск файлов в SubDirectorys
-        public void DirSearch(string sDir)
-        {
-            try
-            {
-                foreach (string d in Directory.GetDirectories(sDir))
-                {
-                    foreach (string f in Directory.GetFiles(d))
-                    {
-                        FileInfo finfo = new FileInfo(f);
-                        if (finfo.Exists != false)
-                        {
-                            dataList.Rows.Add(finfo.Name, finfo.FullName, "delete", "not in archive");
-                        }
-                        else Console.WriteLine("Файл " + finfo.FullName + " не существует. Он не будет помещен в архив");
-                    }
-                    DirSearch(d);
-                }
-            }
-            catch (System.Exception excpt)
-            {
-                Console.WriteLine(excpt.Message);
-            }
-        }
+
         //Обробатчик таблицы
         private void deleteRow_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -110,15 +81,21 @@ namespace Archiver
         {
             SaveFileDialog saveForm = new SaveFileDialog();
             saveForm.AddExtension = true;
-            saveForm.DefaultExt = ".container";
+            saveForm.DefaultExt = defEXT;
 
             if (saveForm.ShowDialog() == DialogResult.OK)
             {
-                ProgressBarForm progressBar = new ProgressBarForm();
-                progressBar.Show();
                 Package.FileList = GetFileList();
                 Package.ArchiveName = saveForm.FileName;
-                Package.AddAllFilesToArchive();
+
+                try
+                {
+                    Package.AddAllFilesToArchive();
+                }
+                catch (IOException IOExp)
+                {
+                    MessageBox.Show(IOExp.Source + Strings.ioExp);
+                }
                 MessageBox.Show(Strings.archivatingComplete + Package.ArchiveName);
             }
 
@@ -127,9 +104,9 @@ namespace Archiver
         private string[] GetFileList()
         {
             List<string> List = new List<string>();
-            for(int i= 0; i< dataList.Rows.Count-1; i++)
+            for (int i = 0; i < dataList.Rows.Count - 1; i++)
             {
-                 List.Add(dataList.Rows[i].Cells[1].Value.ToString());
+                List.Add(dataList.Rows[i].Cells[1].Value.ToString());
             }
             return List.ToArray();
         }
@@ -183,6 +160,6 @@ namespace Archiver
             }
         }
 
-        
+
     }
 }

@@ -5,6 +5,9 @@ using System.Xml.Linq;
 
 namespace Archiver
 {
+    /// <summary>
+    /// Класс Package являеться классом для реализации всех поставленых задач программы(Упаковка\распаковка отдельного\всех файлов, открытие архива) 
+    /// </summary>
     class Package
     {
         private string[] _fileList;
@@ -12,13 +15,7 @@ namespace Archiver
         private StreamsServices _streamsServices;
         private XMLServices _xmlServices;
         private long _displacement;
-        private long _totalSize;
 
-        public long TotalSize
-        {
-            get { return _totalSize; }
-            set { _totalSize = value; }
-        }
         protected XMLServices XmlServices
         {
             get
@@ -49,15 +46,6 @@ namespace Archiver
         }
 
 
-        //Вычисление показателей прогресса записи
-        public void CreateProgressBar()
-        {
-            foreach (string file in FileList)
-            {
-                FileInfo fi = new FileInfo(file);
-                TotalSize += fi.Length;
-            }
-        }
         // Метод добавления всех выбранных файлов в архив
         public void AddAllFilesToArchive() 
         {
@@ -87,9 +75,9 @@ namespace Archiver
 
                     XmlServices.WriteXMLToEnd(ArchiveName);
                 }
-                catch (IOException)
+                catch (IOException ioe)
                 {
-                    Console.WriteLine(Strings.ioExp);
+                    Console.WriteLine(ioe.Source + Strings.ioExp);
                 }
                 catch (TypeAccessException)
                 {
@@ -108,7 +96,6 @@ namespace Archiver
             XmlServices.XMLPath = ArchiveName;
             XmlServices.GETXML(ArchiveName);
             FileList = XmlServices.GetArchiveFileNames();
-            //File.Delete(XmlServices.XMLPath);
         }
         
         //Добавление файла в существующий архив
@@ -135,7 +122,6 @@ namespace Archiver
         public void ExtractALL(string directoryName)
         {
 
-            //XmlServices.GETXML(ArchiveName);
             XDocument doc = XDocument.Load(XmlServices.XMLPath);
             foreach (var item in doc.Root.Elements())
             {
@@ -160,26 +146,21 @@ namespace Archiver
         // Выборочное извлечение одного файла из архива
         public void ExtractSingelFile(string fileName, string extractPath)
         {
-            XDocument doc = XDocument.Load(XmlServices.XMLPath);
-            foreach (var item in doc.Root.Elements())
+
+            Archiver.Classes.ArchiveFileInfo infos = XmlServices.getFileInfo(fileName, extractPath);
+
+
+
+            using (BinaryReader reader = new BinaryReader(File.Open(ArchiveName, FileMode.Open)))
             {
-                if (item.Element("fileName").Value == fileName)
+                reader.BaseStream.Seek(infos.disp, SeekOrigin.Begin);
+                using (FileStream fs = new FileStream(infos.newFilePath, FileMode.Create, FileAccess.Write))
                 {
-                    long size = Convert.ToInt64(item.Element("size").Value);
-                    long disp = Convert.ToInt64(item.Element("displacement").Value);
-                    string newFilePath = extractPath +"//" + item.Element("fileName").Value;
-                    using (BinaryReader reader = new BinaryReader(File.Open(ArchiveName, FileMode.Open)))
+                    using (BinaryWriter writer = new BinaryWriter(fs))
                     {
-                        reader.BaseStream.Seek(disp, SeekOrigin.Begin);
-                        using (FileStream fs = new FileStream(newFilePath, FileMode.Create, FileAccess.Write))
+                        while (writer.BaseStream.Position != infos.size)
                         {
-                            using (BinaryWriter writer = new BinaryWriter(fs))
-                            {
-                                while (writer.BaseStream.Position != size)
-                                {
-                                    writer.Write(reader.ReadByte());
-                                }
-                            }
+                            writer.Write(reader.ReadByte());
                         }
                     }
                 }
