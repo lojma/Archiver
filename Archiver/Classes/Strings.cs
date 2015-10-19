@@ -16,5 +16,9 @@ namespace Archiver
        public readonly static string argExp = "Ошибка аргумента";
        public readonly static string dirNotFoundExp = "Директорию не удалось найти, проверьте существует ли она";
        public readonly static string notSupExp = "Непредвиденая ошибка.";
+       public readonly static string singleFileExtracting = "Успешно извлечен";
+       public readonly static string gettingFileList = "Список файлов успешно получины";
+       public static string fullExtract = "Файлы извлечены в папку ";
+       public static string singleAddFile = " Был извлечен из архива";
     }
 }

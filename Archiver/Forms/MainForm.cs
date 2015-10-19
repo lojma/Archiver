@@ -94,6 +94,7 @@ namespace Archiver
                     string extractPath = folderBrowse.SelectedPath;
                     string extractingFile = dataList.Rows[e.RowIndex].Cells[0].Value.ToString();
                     Package.ExtractSingelFile(extractingFile, extractPath);
+                    MessageBox.Show(extractingFile + Strings.singleFileExtracting);
                 }
             }
         }
@@ -151,7 +152,7 @@ namespace Archiver
                 {
                     dataList.Rows.Add(item);
                 }
-
+                MessageBox.Show(Strings.gettingFileList);
             }
         }
         //Извлечение всех файлов архива в заданую директорию
@@ -163,6 +164,7 @@ namespace Archiver
             {
                 Package.ExtractALL(folderbrowser.SelectedPath);
             }
+            MessageBox.Show(Strings.fullExtract + folderbrowser.SelectedPath);
         }
         //Добавление файла в существующий архив(выбор целевого архива и файла для записи)
         private void addToExistArchive_button_Click(object sender, EventArgs e)
@@ -177,6 +179,7 @@ namespace Archiver
                 if (addFileResult == DialogResult.OK)
                 {
                     Package.AddFileToExistArchive(archiveName.FileName, addFile.FileName);
+                    MessageBox.Show(addFile.FileName + Strings.singleAddFile);
                 }
             }
         }
