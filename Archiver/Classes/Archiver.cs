@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 
@@ -65,12 +64,7 @@ namespace Archiver
                     }
                     foreach (var item in FileList)
                     {
-                        Service.ReadedItem = item;
-                        Service.ArchivePath = ArchiveName;
-                        Service.WriteArchive();
-                        _displacement = Service.Displacement;
-                        XmlServices.XMLPath = ArchiveName;
-                        XmlServices.AddtoXML(doc, item, _displacement);
+                        MakeArchive(doc, item);
                     }
 
                     XmlServices.WriteXMLToEnd(ArchiveName);
@@ -88,6 +82,16 @@ namespace Archiver
                     Console.WriteLine(Strings.nullRefExp);
                 }
             }
+        }
+        //Задание всех нужных параметров для создания архива
+        private void MakeArchive(XDocument doc, string item)
+        {
+            Service.ReadedItem = item;
+            Service.ArchivePath = ArchiveName;
+            Service.WriteArchive();
+            _displacement = Service.Displacement;
+            XmlServices.XMLPath = ArchiveName;
+            XmlServices.AddtoXML(doc, item, _displacement);
         }
         
         //Открытие архива(поиск XML и запись списка содержащихся в архиве файлов
@@ -107,13 +111,7 @@ namespace Archiver
 
             XDocument doc = XDocument.Load(XmlServices.XMLPath);
 
-
-            Service.ReadedItem = addFileName;
-            Service.ArchivePath = ArchiveName;
-            Service.WriteArchive();
-            _displacement = Service.Displacement;
-            XmlServices.XMLPath = ArchiveName;
-            XmlServices.AddtoXML(doc, addFileName, _displacement);
+            MakeArchive(doc, addFileName);
 
             XmlServices.WriteXMLToEnd(ArchiveName);
         }
@@ -127,7 +125,7 @@ namespace Archiver
             {
                 using (BinaryReader reader = new BinaryReader(File.Open(ArchiveName, FileMode.Open)))
                 {
-                    string newFileName = directoryName + "\\" + item.Element("fileName").Value;
+                    string newFileName = directoryName + Path.AltDirectorySeparatorChar + item.Element("fileName").Value;
                     long disp = Convert.ToInt64(item.Element("displacement").Value);
                     long newFileSize = Convert.ToInt64(item.Element("size").Value);
                     reader.BaseStream.Seek(disp, SeekOrigin.Begin);
@@ -148,8 +146,6 @@ namespace Archiver
         {
 
             Archiver.Classes.ArchiveFileInfo infos = XmlServices.getFileInfo(fileName, extractPath);
-
-
 
             using (BinaryReader reader = new BinaryReader(File.Open(ArchiveName, FileMode.Open)))
             {

@@ -15,7 +15,14 @@ namespace Archiver
         public long Displacement
         {
             get { return _displacement; }
-            private set { _displacement = value; }
+            private set
+            {
+                if (value > 0)
+                {
+                    _displacement = value;
+                }
+                else throw new System.ArgumentException();
+            }
         }
         public string ReadedItem
         {

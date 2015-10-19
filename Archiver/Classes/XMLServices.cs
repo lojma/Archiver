@@ -5,6 +5,9 @@ using System.Xml.Linq;
 
 namespace Archiver
 {
+    /// <summary>
+    /// Класс предназначен для работы с XML-файлом содержащим список файлов в архиве. Получение списка файлов, создание XML, Запись Xml)
+    /// </summary>
     class XMLServices
     {
         private string _XMLPath;
@@ -99,6 +102,7 @@ namespace Archiver
             return List.ToArray();
         }
 
+        //получение и создание информации о новом файле
         internal Classes.ArchiveFileInfo getFileInfo(string fileName, string basePath)
         {
             XDocument doc = XDocument.Load(XMLPath);
@@ -116,6 +120,7 @@ namespace Archiver
             }
             return null;
         }
+
         
     }
 }

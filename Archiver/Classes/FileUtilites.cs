@@ -5,6 +5,9 @@ using System.IO;
 
 namespace Archiver.Classes
 {
+    /// <summary>
+    /// Данный класс содержить метод рекурсивного поиска, а также метод-расширение для чтение всех бит бинарного файла
+    /// </summary>
     public static class FileUtilites
     {
         //Размео буфера чтения\записи

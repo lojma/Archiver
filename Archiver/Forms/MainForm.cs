@@ -5,6 +5,9 @@ using System.Windows.Forms;
 
 namespace Archiver
 {
+    /// <summary>
+    /// Класс главной формы приложения. Реализует действия при нажатие на кнопку
+    /// </summary>
     public partial class MainForm : Form
     {
         private const string defEXT= ".container";
@@ -30,13 +33,31 @@ namespace Archiver
             if (openFolder.ShowDialog() == DialogResult.OK)
             {
                 dataList.Columns[4].Visible = false;
-                List<string> fileList = Archiver.Classes.FileUtilites.DirSearch(openFolder.SelectedPath);
-                foreach (var item in fileList)
+                try
                 {
-                    FileInfo finfo = new FileInfo(item);
-                    dataList.Rows.Add(finfo.Name, finfo.FullName, "delete", "not in archive");
+                    List<string> fileList = Archiver.Classes.FileUtilites.DirSearch(openFolder.SelectedPath);
+
+                    foreach (var item in fileList)
+                    {
+                        FileInfo finfo = new FileInfo(item);
+                        dataList.Rows.Add(finfo.Name, finfo.FullName, "delete", "not in archive");
+                    }
                 }
-                
+                catch (ArgumentException argExp)
+                {
+                    Console.WriteLine(argExp.ParamName + Strings.argExp);
+                }
+                catch (DirectoryNotFoundException dirNotFoundExp)
+                {
+                    Console.WriteLine(dirNotFoundExp.Source + Strings.dirNotFoundExp);
+                    if (openFolder.ShowDialog() == DialogResult.OK) return;
+                    throw;
+                }
+                catch (NotSupportedException notSupExp)
+                {
+                    Console.WriteLine(notSupExp.Source + Strings.notSupExp);
+                    Application.Exit();
+                }
 
             }
         }
@@ -44,7 +65,6 @@ namespace Archiver
         private void addFiles_button_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
-            openFile.InitialDirectory = "d:\\";
             openFile.Multiselect = true;
             if (openFile.ShowDialog() == DialogResult.OK)
             {
@@ -62,6 +82,7 @@ namespace Archiver
             //удаление файла из списка при нажатие кнопки соответсвующего ряда
             if (dataList.Rows[e.RowIndex].Cells[e.ColumnIndex] is DataGridViewButtonCell)
             {
+                dataList.Rows.RemoveAt(e.RowIndex);
             }
             //Извлечение файла (одного) из архива по нажатию ссылки определенного ряда
             if (dataList.Rows[e.RowIndex].Cells[e.ColumnIndex] is DataGridViewLinkCell)

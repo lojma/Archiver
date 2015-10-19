@@ -13,5 +13,8 @@ namespace Archiver
        public readonly static string fileNotFoundExp = "Данный файл не был найден";
        public readonly static string fileLoadExp = "Загрузка данного файла вызвала ошибку";
        public readonly static string endOfStreamExp = "Попытка прочтения потока за пределами файла";
+       public readonly static string argExp = "Ошибка аргумента";
+       public readonly static string dirNotFoundExp = "Директорию не удалось найти, проверьте существует ли она";
+       public readonly static string notSupExp = "Непредвиденая ошибка.";
     }
 }
